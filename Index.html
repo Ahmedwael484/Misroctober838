@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة العضوية - حزب مصر أكتوبر</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #000; color: #fff; font-family: 'Tajawal', sans-serif; }
+        .navbar { background-color: #000; border-bottom: 2px solid #ffd700; }
+        .navbar-brand, .nav-link { color: #ffd700 !important; }
+        .container { margin-top: 20px; background-image: url('IMG-20250121-WA0042(1).jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(255, 215, 0, 0.1); }
+        .card { margin-bottom: 20px; border: none; border-radius: 10px; background-color: rgba(26, 26, 26, 0.8); color: #fff; box-shadow: 0 4px 8px rgba(255, 215, 0, 0.1); }
+        .form-control { border-radius: 5px; background-color: #333; color: #fff; border: 1px solid #ffd700; }
+        .btn-primary { background-color: #ffd700; border: none; padding: 10px 20px; border-radius: 5px; color: #000; }
+        .btn-primary:hover { background-color: #ccac00; }
+        .btn-danger { background-color: #dc3545; border: none; padding: 10px 20px; border-radius: 5px; color: #fff; }
+        .btn-danger:hover { background-color: #a71d2a; }
+        .btn-print { background-color: #28a745; border: none; padding: 10px 20px; border-radius: 5px; color: #fff; }
+        .btn-print:hover { background-color: #218838; }
+        .section-title { color: #ffd700; margin-bottom: 20px; }
+        .table-responsive { overflow-x: auto; }
+        .table { margin-top: 20px; color: #fff !important; width: 100%; }
+        .table th { background-color: #ffd700; color: #000 !important; }
+        .table td { background-color: #333; color: #fff !important; }
+        .hidden { display: none; }
+        .white-text { color: #fff !important; }
+        .actions { white-space: nowrap; }
+        @media (max-width: 768px) {
+            .btn-primary, .btn-danger, .btn-print { padding: 8px 16px; font-size: 14px; }
+            .form-control { font-size: 14px; }
+            .table th, .table td { font-size: 14px; }
+            .section-title { font-size: 18px; }
+        }
+        @media print {
+            .card-image { width: 300px !important; height: auto !important; margin: 20px; border: 1px solid #ccc; border-radius: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">حزب مصر أكتوبر</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="#register" id="navRegister">تسجيل عضو جديد</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#members" id="navMembers">قائمة الأعضاء</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#reports" id="navReports">التقارير</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <section id="admin" class="card p-4">
+        <h2 class="section-title">لوحة التحكم</h2>
+        <form id="adminForm">
+            <div class="mb-3">
+                <label for="adminUsername" class="form-label white-text">اسم المستخدم</label>
+                <input type="text" class="form-control" id="adminUsername" required>
+            </div>
+            <div class="mb-3">
+                <label for="adminPassword" class="form-label white-text">كلمة المرور</label>
+                <input type="password" class="form-control" id="adminPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary">تسجيل الدخول</button>
+        </form>
+    </section>
+    <div class="container hidden" id="mainContent">
+        <section id="register" class="card p-4">
+            <h2 class="section-title">تسجيل عضو جديد</h2>
+            <form id="memberForm">
+                <div class="mb-3">
+                    <label for="name" class="form-label white-text">الاسم الكامل</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="nationalId" class="form-label white-text">الرقم القومي</label>
+                    <input type="text" class="form-control" id="nationalId" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label white-text">البريد الإلكتروني</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label white-text">رقم الهاتف</label>
+                    <input type="tel" class="form-control" id="phone" required>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label white-text">العنوان</label>
+                    <input type="text" class="form-control" id="address" required>
+                </div>
+                <div class="mb-3">
+                    <label for="skills" class="form-label white-text">المهارات والدورات</label>
+                    <textarea class="form-control" id="skills" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="photo" class="form-label white-text">صورة العضو</label>
+                    <input type="file" class="form-control" id="photo" accept="image/*">
+                </div>
+                <div class="mb-3">
+                    <label for="cv" class="form-label white-text">رفع الـ CV</label>
+                    <input type="file" class="form-control" id="cv" accept=".pdf,.doc,.docx">
+                </div>
+                <div class="mb-3">
+                    <label for="cardFront" class="form-label white-text">صورة البطاقة (الوجه الأمامي)</label>
+                    <input type="file" class="form-control" id="cardFront" accept="image/*">
+                </div>
+                <div class="mb-3">
+                    <label for="cardBack" class="form-label white-text">صورة البطاقة (الوجه الخلفي)</label>
+                    <input type="file" class="form-control" id="cardBack" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary">تسجيل</button>
+            </form>
+        </section>
+        <section id="members" class="card p-4">
+            <h2 class="section-title">قائمة الأعضاء</h2>
+            <input type="text" id="searchInput" class="form-control mb-3" placeholder="بحث بالاسم...">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>الرقم القومي</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>رقم الهاتف</th>
+                            <th>العنوان</th>
+                            <th>المهارات</th>
+                            <th>الصورة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTable"></tbody>
+                </table>
+            </div>
+            <button class="btn btn-print mt-3" onclick="printReport()">طباعة التقرير</button>
+        </section>
+        <section id="reports" class="card p-4">
+            <h2 class="section-title">التقارير</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title white-text">عدد الأعضاء</h5>
+                            <p class="card-text white-text" id="totalMembers">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title white-text">أحدث عضو</h5>
+                            <p class="card-text white-text" id="latestMember">لا يوجد</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let members = JSON.parse(localStorage.getItem('members')) || [];
+        const admins = [
+            { username: "سلمي", password: "251099" },
+            { username: "حبيبة", password: "26102000" },
+            { username: "أستاذ محمد يحيى", password: "20252025" },
+            { username: "ندى", password: "101010" }
+        ];
+        document.getElementById('adminForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            const admin = admins.find(a => a.username === username && a.password === password);
+            if (admin) {
+                alert('تم تسجيل الدخول بنجاح!');
+                document.getElementById('admin').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+            } else {
+                alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+            }
+        });
+        document.getElementById('memberForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const newMember = {
+                id: members.length + 1,
+                name: document.getElementById('name').value,
+                nationalId: document.getElementById('nationalId').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                skills: document.getElementById('skills').value,
+                photo: document.getElementById('photo').files[0] ? URL.createObjectURL(document.getElementById('photo').files[0]) : null,
+                cv: document.getElementById('cv').files[0] ? URL.createObjectURL(document.getElementById('cv').files[0]) : null,
+                cardFront: document.getElementById('cardFront').files[0] ? URL.createObjectURL(document.getElementById('cardFront').files[0]) : null,
+                cardBack: document.getElementById('cardBack').files[0] ? URL.createObjectURL(document.getElementById('cardBack').files[0]) : null
+            };
+            members.push(newMember);
+            localStorage.setItem('members', JSON.stringify(members));
+            alert('تم تسجيل العضو بنجاح!');
+            document.getElementById('memberForm').reset();
+            displayMembers();
+            updateReports();
+        });
+        function displayMembers(filter = '') {
+            const membersTable = document.getElementById('membersTable');
+            membersTable.innerHTML = '';
+            members.filter(member => member.name.includes(filter)).forEach(member => {
+                membersTable.innerHTML += `
+                    <tr>
+                        <td>${member.id}</td>
+                        <td>${member.name}</td>
+                        <td>${member.nationalId}</td>
+                        <td>${member.email}</td>
+                        <td>${member.phone}</td>
+                        <td>${member.address}</td>
+                        <td>${member.skills}</td>
+                        <td><img src="${member.photo}" width="50" height="50" style="border-radius: 50%;"></td>
+                        <td class="actions">
+                            <button class="btn btn-primary btn-sm" onclick="editMember(${member.id})">تعديل</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteMember(${member.id})">حذف</button>
+                            <button class="btn btn-print btn-sm" onclick="printMember(${member.id})">طباعة</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        document.getElementById('searchInput').addEventListener('input', function() {
+            displayMembers(this.value);
+        });
+        function updateReports() {
+            document.getElementById('totalMembers').textContent = members.length;
+            document.getElementById('latestMember').textContent = members.length > 0 ? members[members.length - 1].name : 'لا يوجد';
+        }
+        function editMember(id) {
+            const member = members.find(m => m.id === id);
+            if (member) {
+                document.getElementById('name').value = member.name;
+                document.getElementById('nationalId').value = member.nationalId;
+                document.getElementById('email').value = member.email;
+                document.getElementById('phone').value = member.phone;
+                document.getElementById('address').value = member.address;
+                document.getElementById('skills').value = member.skills;
+                members = members.filter(m => m.id !== id);
+                localStorage.setItem('members', JSON.stringify(members));
+                displayMembers();
+                updateReports();
+            }
+        }
+        function deleteMember(id) {
+            members = members.filter(m => m.id !== id);
+            localStorage.setItem('members', JSON.stringify(members));
+            displayMembers();
+            updateReports();
+        }
+        function printMember(id) {
+            const member = members.find(m => m.id === id);
+            if (member) {
+                const printWindow = window.open('', '', 'height=600,width=800');
+                printWindow.document.write('<html><head><title>تقرير العضو</title>');
+                printWindow.document.write('<style>');
+                printWindow.document.write('body { font-family: Arial, sans-serif; }');
+                printWindow.document.write('table { width: 100%; border-collapse: collapse; }');
+                printWindow.document.write('th, td { border: 1px solid #000; padding: 8px; text-align: center; }');
+                printWindow.document.write('img { width: 100px; height: 100px; border-radius: 50%; }');
+                printWindow.document.write('.card-image { width: 300px; height: auto; margin: 20px; }');
+                printWindow.document.write('</style></head><body>');
+                printWindow.document.write('<h1>تقرير العضو</h1>');
+                printWindow.document.write('<table>');
+                printWindow.document.write('<thead><tr><th>الاسم</th><th>الرقم القومي</th><th>البريد الإلكتروني</th><th>رقم الهاتف</th><th>العنوان</th><th>المهارات</th><th>الصورة</th></tr></thead>');
+                printWindow.document.write(`<tr>
+                    <td>${member.name}</td>
+                    <td>${member.nationalId}</td>
+                    <td>${member.email}</td>
+                    <td>${member.phone}</td>
+                    <td>${member.address}</td>
+                    <td>${member.skills}</td>
+                    <td><img src="${member.photo}"></td>
+                </tr>`);
+                printWindow.document.write('</table>');
+                printWindow.document.write('<h2>صور البطاقة</h2>');
+                if (member.cardFront) printWindow.document.write(`<img src="${member.cardFront}" class="card-image">`);
+                if (member.cardBack) printWindow.document.write(`<img src="${member.cardBack}" class="card-image">`);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.print();
+            }
+        }
+        function printReport() {
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>تقرير الأعضاء</title>');
+            printWindow.document.write('<style>');
+            printWindow.document.write('body { font-family: Arial, sans-serif; }');
+            printWindow.document.write('table { width: 100%; border-collapse: collapse; }');
+            printWindow.document.write('.card-image { width: 300px; height: auto; margin: 20px; }');
+            printWindow.document.write('</style></head><body>');
+            printWindow.document.write('<h1>تقرير الأعضاء</h1>');
+            members.forEach(member => {
+                printWindow.document.write(`<h2>${member.name}</h2>`);
+                printWindow.document.write('<table>');
+                printWindow.document.write(`<tr>
+                    <td>الرقم القومي</td>
+                    <td>${member.nationalId}</td>
+                </tr>
+                <tr>
+                    <td>البريد الإلكتروني</td>
+                    <td>${member.email}</td>
+                </tr>
+                <tr>
+                    <td>رقم الهاتف</td>
+                    <td>${member.phone}</td>
+                </tr>
+                <tr>
+                    <td>العنوان</td>
+                    <td>${member.address}</td>
+                </tr>`);
+                printWindow.document.write('</table>');
+                printWindow.document.write('<h3>صور البطاقة</h3>');
+                if (member.cardFront) printWindow.document.write(`<img src="${member.cardFront}" class="card-image">`);
+                if (member.cardBack) printWindow.document.write(`<img src="${member.cardBack}" class="card-image">`);
+                printWindow.document.write('<hr>');
+            });
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+        window.onload = function() {
+            displayMembers();
+            updateReports();
+        };
+    </script>
+</body>
+</html>
