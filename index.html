@@ -27,6 +27,24 @@
         .hidden { display: none; }
         .white-text { color: #fff !important; }
         .actions { white-space: nowrap; }
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .notification.success {
+            background: #28a745;
+            color: white;
+        }
+        .notification.error {
+            background: #dc3545;
+            color: white;
+        }
         @media (max-width: 768px) {
             .btn-primary, .btn-danger, .btn-print { padding: 8px 16px; font-size: 14px; }
             .form-control { font-size: 14px; }
@@ -93,6 +111,14 @@
                     <input type="text" class="form-control" id="address" required>
                 </div>
                 <div class="mb-3">
+                    <label for="job" class="form-label white-text">الوظيفة</label>
+                    <input type="text" class="form-control" id="job" required>
+                </div>
+                <div class="mb-3">
+                    <label for="qualification" class="form-label white-text">المؤهل</label>
+                    <input type="text" class="form-control" id="qualification" required>
+                </div>
+                <div class="mb-3">
                     <label for="skills" class="form-label white-text">المهارات والدورات</label>
                     <textarea class="form-control" id="skills" rows="3"></textarea>
                 </div>
@@ -128,6 +154,8 @@
                             <th>البريد الإلكتروني</th>
                             <th>رقم الهاتف</th>
                             <th>العنوان</th>
+                            <th>الوظيفة</th>
+                            <th>المؤهل</th>
                             <th>المهارات</th>
                             <th>الصورة</th>
                             <th>الإجراءات</th>
@@ -159,29 +187,74 @@
                 </div>
             </div>
         </section>
+        <section id="userManagement" class="card p-4 hidden">
+            <h2 class="section-title">إدارة المستخدمين</h2>
+            <form id="userForm">
+                <div class="mb-3">
+                    <label for="newUsername" class="form-label white-text">اسم المستخدم الجديد</label>
+                    <input type="text" class="form-control" id="newUsername" required>
+                </div>
+                <div class="mb-3">
+                    <label for="newPassword" class="form-label white-text">كلمة المرور الجديدة</label>
+                    <input type="password" class="form-control" id="newPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">إضافة مستخدم</button>
+            </form>
+
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>اسم المستخدم</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable"></tbody>
+                </table>
+            </div>
+        </section>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let members = JSON.parse(localStorage.getItem('members')) || [];
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentAdmin = null;
+
         const admins = [
             { username: "سلمي", password: "251099" },
             { username: "حبيبة", password: "26102000" },
-            { username: "أستاذ محمد يحيى", password: "20252025" },
+            { username: "MohamedYehai", password: "0000" },
             { username: "ندى", password: "101010" }
         ];
+
         document.getElementById('adminForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const username = document.getElementById('adminUsername').value;
             const password = document.getElementById('adminPassword').value;
-            const admin = admins.find(a => a.username === username && a.password === password);
+            
+            const admin = admins.find(a => a.username === username && a.password === password) || 
+                         users.find(u => u.username === username && u.password === password);
+
             if (admin) {
-                alert('تم تسجيل الدخول بنجاح!');
+                currentAdmin = admin;
+                showNotification('تم تسجيل الدخول بنجاح!', 'success');
                 document.getElementById('admin').classList.add('hidden');
                 document.getElementById('mainContent').classList.remove('hidden');
+                
+                if (currentAdmin.username === 'MohamedYehai') {
+                    document.getElementById('userManagement').classList.remove('hidden');
+                    document.querySelector('#navbarNav').innerHTML += `
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="#userManagement" id="navUsers">إدارة المستخدمين</a></li>
+                        </ul>`;
+                }
+                
+                updateUserList();
             } else {
-                alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+                showNotification('بيانات الدخول غير صحيحة!', 'error');
             }
         });
+
         document.getElementById('memberForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const newMember = {
@@ -191,6 +264,8 @@
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
                 address: document.getElementById('address').value,
+                job: document.getElementById('job').value,
+                qualification: document.getElementById('qualification').value,
                 skills: document.getElementById('skills').value,
                 photo: document.getElementById('photo').files[0] ? URL.createObjectURL(document.getElementById('photo').files[0]) : null,
                 cv: document.getElementById('cv').files[0] ? URL.createObjectURL(document.getElementById('cv').files[0]) : null,
@@ -199,11 +274,28 @@
             };
             members.push(newMember);
             localStorage.setItem('members', JSON.stringify(members));
-            alert('تم تسجيل العضو بنجاح!');
+            showNotification('تم تسجيل العضو بنجاح!', 'success');
             document.getElementById('memberForm').reset();
             displayMembers();
             updateReports();
         });
+
+        document.getElementById('userForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (currentAdmin.username !== 'MohamedYehai') return;
+            
+            const newUser = {
+                username: document.getElementById('newUsername').value,
+                password: document.getElementById('newPassword').value
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            showNotification('تم إضافة المستخدم بنجاح!', 'success');
+            document.getElementById('userForm').reset();
+            updateUserList();
+        });
+
         function displayMembers(filter = '') {
             const membersTable = document.getElementById('membersTable');
             membersTable.innerHTML = '';
@@ -216,6 +308,8 @@
                         <td>${member.email}</td>
                         <td>${member.phone}</td>
                         <td>${member.address}</td>
+                        <td>${member.job}</td>
+                        <td>${member.qualification}</td>
                         <td>${member.skills}</td>
                         <td><img src="${member.photo}" width="50" height="50" style="border-radius: 50%;"></td>
                         <td class="actions">
@@ -227,13 +321,56 @@
                 `;
             });
         }
+
+        function updateUserList() {
+            const usersTable = document.getElementById('usersTable');
+            usersTable.innerHTML = '';
+            
+            users.forEach(user => {
+                usersTable.innerHTML += `
+                    <tr>
+                        <td>${user.username}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" 
+                                    onclick="deleteUser('${user.username}')" 
+                                    ${currentAdmin.username !== 'MohamedYehai' ? 'disabled' : ''}>
+                                حذف
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function deleteUser(username) {
+            if (currentAdmin.username === 'MohamedYehai') {
+                users = users.filter(u => u.username !== username);
+                localStorage.setItem('users', JSON.stringify(users));
+                updateUserList();
+                showNotification('تم حذف المستخدم بنجاح!', 'success');
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
         document.getElementById('searchInput').addEventListener('input', function() {
             displayMembers(this.value);
         });
+
         function updateReports() {
             document.getElementById('totalMembers').textContent = members.length;
             document.getElementById('latestMember').textContent = members.length > 0 ? members[members.length - 1].name : 'لا يوجد';
         }
+
         function editMember(id) {
             const member = members.find(m => m.id === id);
             if (member) {
@@ -242,6 +379,8 @@
                 document.getElementById('email').value = member.email;
                 document.getElementById('phone').value = member.phone;
                 document.getElementById('address').value = member.address;
+                document.getElementById('job').value = member.job;
+                document.getElementById('qualification').value = member.qualification;
                 document.getElementById('skills').value = member.skills;
                 members = members.filter(m => m.id !== id);
                 localStorage.setItem('members', JSON.stringify(members));
@@ -249,12 +388,14 @@
                 updateReports();
             }
         }
+
         function deleteMember(id) {
             members = members.filter(m => m.id !== id);
             localStorage.setItem('members', JSON.stringify(members));
             displayMembers();
             updateReports();
         }
+
         function printMember(id) {
             const member = members.find(m => m.id === id);
             if (member) {
@@ -269,13 +410,15 @@
                 printWindow.document.write('</style></head><body>');
                 printWindow.document.write('<h1>تقرير العضو</h1>');
                 printWindow.document.write('<table>');
-                printWindow.document.write('<thead><tr><th>الاسم</th><th>الرقم القومي</th><th>البريد الإلكتروني</th><th>رقم الهاتف</th><th>العنوان</th><th>المهارات</th><th>الصورة</th></tr></thead>');
+                printWindow.document.write('<thead><tr><th>الاسم</th><th>الرقم القومي</th><th>البريد الإلكتروني</th><th>رقم الهاتف</th><th>العنوان</th><th>الوظيفة</th><th>المؤهل</th><th>المهارات</th><th>الصورة</th></tr></thead>');
                 printWindow.document.write(`<tr>
                     <td>${member.name}</td>
                     <td>${member.nationalId}</td>
                     <td>${member.email}</td>
                     <td>${member.phone}</td>
                     <td>${member.address}</td>
+                    <td>${member.job}</td>
+                    <td>${member.qualification}</td>
                     <td>${member.skills}</td>
                     <td><img src="${member.photo}"></td>
                 </tr>`);
@@ -288,6 +431,7 @@
                 printWindow.print();
             }
         }
+
         function printReport() {
             const printWindow = window.open('', '', 'height=600,width=800');
             printWindow.document.write('<html><head><title>تقرير الأعضاء</title>');
@@ -315,6 +459,14 @@
                 <tr>
                     <td>العنوان</td>
                     <td>${member.address}</td>
+                </tr>
+                <tr>
+                    <td>الوظيفة</td>
+                    <td>${member.job}</td>
+                </tr>
+                <tr>
+                    <td>المؤهل</td>
+                    <td>${member.qualification}</td>
                 </tr>`);
                 printWindow.document.write('</table>');
                 printWindow.document.write('<h3>صور البطاقة</h3>');
@@ -326,6 +478,7 @@
             printWindow.document.close();
             printWindow.print();
         }
+
         window.onload = function() {
             displayMembers();
             updateReports();
